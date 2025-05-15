@@ -1,5 +1,5 @@
 
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import MainLayout from "@/components/layout/MainLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,15 +58,46 @@ const conditionColors: Record<string, string> = {
 
 const ProductPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [mainImage, setMainImage] = useState(product.images[0]);
   const [quantity, setQuantity] = useState(1);
   const { toast } = useToast();
 
   const handleAddToCart = () => {
+    // Get existing cart from localStorage
+    const existingCart = localStorage.getItem("cart");
+    let cart = existingCart ? JSON.parse(existingCart) : [];
+    
+    // Check if product already in cart
+    const existingItemIndex = cart.findIndex((item: any) => item.id === product.id);
+    
+    if (existingItemIndex >= 0) {
+      // Update quantity if product already exists
+      cart[existingItemIndex].quantity += quantity;
+    } else {
+      // Add new product to cart
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.images[0],
+        quantity: quantity
+      });
+    }
+    
+    // Save updated cart to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+    
+    // Show success toast
     toast({
       title: "Added to cart",
       description: `${quantity} × ${product.name} added to your cart`,
     });
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    navigate('/cart');
   };
 
   const handleQuantityChange = (value: number) => {
@@ -162,7 +193,10 @@ const ProductPage = () => {
                 <span>{product.warranty}</span>
               </div>
 
-              <Button onClick={handleAddToCart} className="w-full">Add to Cart</Button>
+              <div className="grid grid-cols-2 gap-4">
+                <Button onClick={handleAddToCart} className="w-full">Add to Cart</Button>
+                <Button onClick={handleBuyNow} variant="outline" className="w-full">Buy Now</Button>
+              </div>
               
               <Button variant="outline" className="w-full flex items-center gap-2">
                 Request Bulk Quote <ArrowRight className="h-4 w-4" />
