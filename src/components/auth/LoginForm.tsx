@@ -41,15 +41,24 @@ const LoginForm = ({ onRegisterClick }: LoginFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     
-    // Mock authentication - would be replaced with actual auth logic
-    setTimeout(() => {
+    try {
+      // Mock authentication - would be replaced with actual auth logic
+      setTimeout(() => {
+        setIsLoading(false);
+        toast({
+          title: "Login successful",
+          description: "Welcome back to ReComTrade!",
+        });
+        navigate("/dashboard");
+      }, 1500);
+    } catch (error) {
       setIsLoading(false);
       toast({
-        title: "Login successful",
-        description: "Welcome back to ReComTrade!",
+        title: "Login failed",
+        description: "Please check your credentials and try again.",
+        variant: "destructive",
       });
-      navigate("/dashboard");
-    }, 1500);
+    }
   };
 
   return (

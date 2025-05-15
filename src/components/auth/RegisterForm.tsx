@@ -48,15 +48,24 @@ const RegisterForm = ({ onLoginClick }: RegisterFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     
-    // Mock registration - would be replaced with actual auth logic
-    setTimeout(() => {
+    try {
+      // Mock registration - would be replaced with actual auth logic
+      setTimeout(() => {
+        setIsLoading(false);
+        toast({
+          title: "Registration successful",
+          description: "Welcome to ReComTrade!",
+        });
+        navigate("/dashboard");
+      }, 1500);
+    } catch (error) {
       setIsLoading(false);
       toast({
-        title: "Registration successful",
-        description: "Welcome to ReComTrade!",
+        title: "Registration failed",
+        description: "An error occurred. Please try again.",
+        variant: "destructive",
       });
-      navigate("/dashboard");
-    }, 1500);
+    }
   };
 
   return (
